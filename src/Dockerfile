@@ -1,23 +1,31 @@
+# Use Ubuntu as the base image
 FROM ubuntu:20.04
 
-# Cập nhật và cài đặt các gói cần thiết
-RUN apt-get update && \
-    apt-get install -y apache2 php libapache2-mod-php php-mysql wget nano && \
-    # Thiết lập múi giờ
-    ln -sf /usr/share/zoneinfo/Asia/Ho_Chi_Minh /etc/localtime && \
-    echo "Asia/Ho_Chi_Minh" > /etc/timezone
+# Set noninteractive mode and configure time zone
+ENV DEBIAN_FRONTEND=noninteractive
+ENV TZ=Asia/Ho_Chi_Minh
 
+# Install Apache, PHP, and required PHP modules
+RUN apt-get update && \
+    apt-get install -y apache2 php libapache2-mod-php php-mysql wget nano
+
+# Set working directory
 WORKDIR /var/www/html/
 
-# Xóa tệp index.html mặc định của Apache
+# Remove the default index.html
 RUN rm -rf index.html
 
-# Sao chép mã nguồn của website vào thư mục www
+# Copy the website files into the container
 COPY ./Website ./
 
-# Thay đổi quyền sở hữu và quyền truy cập cho thư mục images
-RUN chown -R www-data:www-data /var/www/html/images/ && \
-    chmod -R 777 /var/www/html/images/
+# Check if the directory exists before changing permissions
+RUN if [ -d "/var/www/html/images/" ]; then \
+        chown -R www-data:www-data /var/www/html/images/ && \
+        chmod -R 777 /var/www/html/images/; \
+    fi
 
-# Kích hoạt Apache2
+# Expose port 80
+EXPOSE 80
+
+# Start Apache
 CMD ["apache2ctl", "-D", "FOREGROUND"]
