@@ -6,12 +6,14 @@ services:
     container_name: DB
     command: --default-authentication-plugin=mysql_native_password --character-set-server=utf8 --collation-server=utf8_unicode_ci
     environment:
-      - MYSQL_DATABASE=${MYSQL_DATABASE}
-      - MYSQL_USER=${MYSQL_USER}
-      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
-      - MYSQL_ALLOW_EMPTY_PASSWORD=${MYSQL_ALLOW_EMPTY_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_ALLOW_EMPTY_PASSWORD: ${MYSQL_ALLOW_EMPTY_PASSWORD}
     volumes:
       - "./DB:/docker-entrypoint-initdb.d"
+    ports:
+      - "3306:3306"
 
   web:
     container_name: Website
@@ -21,7 +23,7 @@ services:
     volumes:
       - "./src/Website:/var/www/html"
     ports:
-      - 80:80
+      - "80:80"
     extra_hosts:
       - "kibana.local:192.168.1.21"
       - "elasticsearch.local:192.168.1.21"
@@ -30,7 +32,7 @@ services:
     image: phpmyadmin/phpmyadmin:4.8.1
     container_name: PHPMYADMIN_Web
     ports:
-      - 8001:80
+      - "8001:80"
     environment:
-      - PMA_HOST=db
-      - PMA_PORT=3306
+      PMA_HOST: db
+      PMA_PORT: 3306
