@@ -18,7 +18,7 @@ RUN apt-get update && \
 # Set working directory
 WORKDIR /var/www/html/
 RUN rm -rf index.html
-COPY ./WEB .
+COPY ./Website .
 
 # Change permissions
 RUN chown -R www-data:www-data /var/www/html/images/
