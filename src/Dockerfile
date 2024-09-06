@@ -14,8 +14,11 @@ RUN apt-get update && \
 # Set working directory
 WORKDIR /var/www/html/
 
-# Copy the application files
+# Copy website files
 COPY . /var/www/html/
+
+# Ensure the uploads directory exists
+RUN mkdir -p /var/www/html/uploads
 
 # Change permissions
 RUN chown -R www-data:www-data /var/www/html/uploads/
