@@ -1,6 +1,6 @@
 <?php
 
-    $dsn = 'mysql:host=DB;dbname=' . getenv('MYSQL_DATABASE'); // Sử dụng tên dịch vụ MySQL từ docker-compose
+	$dsn = 'mysql:host=db;dbname=' . getenv('MYSQL_DATABASE'); // Sử dụng tên dịch vụ MySQL từ docker-compose
     $user = getenv('MYSQL_USER'); // Tên người dùng MySQL
     $pass = getenv('MYSQL_PASSWORD'); // Mật khẩu MySQL
     $option = array(
