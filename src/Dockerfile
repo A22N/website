@@ -1,31 +1,27 @@
-# Use Ubuntu as the base image
+# Use the official Ubuntu image from the Docker Hub
 FROM ubuntu:20.04
 
-# Set noninteractive mode and configure time zone
-ENV DEBIAN_FRONTEND=noninteractive
-ENV TZ=Asia/Ho_Chi_Minh
-
-# Install Apache, PHP, MySQLi, Filebeat, Packetbeat and other dependencies
+# Install Apache, PHP, and required PHP modules
 RUN apt-get update && \
-    apt-get install -y apache2 php libapache2-mod-php php-mysql wget nano apt-transport-https gnupg2 curl && \
-    wget -qO - https://artifacts.elastic.co/GPG-KEY-elasticsearch | apt-key add - && \
-    echo "deb https://artifacts.elastic.co/packages/7.x/apt stable main" | tee -a /etc/apt/sources.list.d/elastic-7.x.list && \
-    apt-get update && \
-    apt-get install filebeat packetbeat libpcap0.8 && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+    apt-get install -y apache2 php libapache2-mod-php php-mysql wget nano
 
 # Set working directory
 WORKDIR /var/www/html/
+
+# Remove the default index.html
 RUN rm -rf index.html
-COPY ./Website .
 
-# Change permissions
-RUN chown -R www-data:www-data /var/www/html/images/
-RUN chmod -R 777 /var/www/html/images/
+# Copy the website files into the container
+COPY ./Website ./
 
-# Expose port 80 to the outside world
+# Check if the directory exists before changing permissions
+RUN if [ -d "/var/www/html/images/" ]; then \
+        chown -R www-data:www-data /var/www/html/images/ && \
+        chmod -R 777 /var/www/html/images/; \
+    fi
+
+# Expose port 80
 EXPOSE 80
 
-# Start Apache server
+# Start Apache
 CMD ["apache2ctl", "-D", "FOREGROUND"]
